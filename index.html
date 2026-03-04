@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Barış'tan Damla'ya Küçük Bir Oyun</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="game-container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen overlay active">
+            <h1>Seni Kurtarmaya Geliyorum Damla!</h1>
+            <p>Sevgiline (Barış'a) yardım et ve engelleri aşarak Damla'ya kavuşmasını sağla.</p>
+            <p class="controls-hint">Hareket: Yön Tuşları veya Ekrana Dokun | Zıplama: Boşluk veya Ekrana Dokun</p>
+            <button id="start-btn" class="btn" style="margin-bottom: 10px;">Maceraya Başla</button>
+            <button id="level-select-btn" class="btn" style="background-color: #3498db; margin-bottom: 20px;">Bölüm
+                Seç</button>
+
+            <div id="level-grid"
+                style="display: none; grid-template-columns: repeat(5, 1fr); gap: 10px; max-width: 400px; margin: 0 auto;">
+                <button class="btn btn-level" data-level="0">1</button>
+                <button class="btn btn-level" data-level="1">2</button>
+                <button class="btn btn-level" data-level="2">3</button>
+                <button class="btn btn-level" data-level="3">4</button>
+                <button class="btn btn-level" data-level="4">5</button>
+                <button class="btn btn-level" data-level="5">6</button>
+                <button class="btn btn-level" data-level="6">7</button>
+                <button class="btn btn-level" data-level="7">8</button>
+                <button class="btn btn-level" data-level="8">9</button>
+                <button class="btn btn-level" data-level="9">10</button>
+            </div>
+        </div>
+
+        <!-- Level Intro Screen -->
+        <div id="level-intro-screen" class="screen overlay">
+            <h1 id="level-title">1. Bölüm</h1>
+            <p id="level-desc" class="controls-hint" style="font-size: 14px; margin-bottom: 10px;">Tema: Park</p>
+        </div>
+
+        <!-- Cutscene Screen (For Final Level Dialogs) -->
+        <div id="cutscene-dialog" class="cutscene-container">
+            <p id="cutscene-text"></p>
+            <button id="cutscene-choice-btn" class="btn"
+                style="display: none; margin-top: 15px; font-size: 12px; border: 2px solid #fff; background-color: #34495e;">Hiç
+                gitmemiştim ki.</button>
+        </div>
+
+        <!-- Win/End Screen -->
+        <div id="win-screen" class="screen overlay">
+            <h1 id="win-title" style="margin-bottom: 20px;">Birlikte devam?</h1>
+            <p class="love-message" style="margin-top: 10px; font-size: 16px;">Devamı gelecek...</p>
+            <p style="margin-top: 30px; font-size: 14px; color: #f1c40f; text-shadow: 2px 2px #000;">Yapan: Barış Sayın
+            </p>
+            <div class="dialog-buttons" style="margin-top: 40px; flex-direction: column; height: auto; gap: 15px;">
+                <button id="restart-btn" class="btn btn-yes"
+                    style="padding: 15px 30px; font-size: 14px; width: 220px;">Tekrar Oyna</button>
+                <button id="main-menu-btn" class="btn btn-no"
+                    style="padding: 15px 30px; font-size: 14px; width: 220px;">Ana Menü</button>
+            </div>
+        </div>
+
+        <!-- Game Canvas -->
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+        <!-- UI Overlay: Death Counter -->
+        <div id="ui-overlay"
+            style="position: absolute; top: 10px; right: 20px; color: white; text-shadow: 2px 2px 0 #000; font-size: 14px; z-index: 5; display: none;">
+            💀 Düşüş: <span id="death-count">0</span>
+        </div>
+
+        <!-- Mobile Controls (Hidden on Desktop) -->
+        <div id="mobile-controls">
+            <div class="d-pad">
+                <button id="btn-left" class="control-btn">◀</button>
+                <button id="btn-right" class="control-btn">▶</button>
+            </div>
+            <div class="action-pad">
+                <button id="btn-jump" class="control-btn action-btn">▲</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Background Music & SFX placeholders -->
+    <script>
+        document.write('<script src="game.js?v=' + Date.now() + '"><\/script>');
+    </script>
+</body>
+
+</html>

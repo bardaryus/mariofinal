@@ -1,0 +1,367 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    font-family: 'Press Start 2P', cursive;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    color: #333;
+}
+
+#game-container {
+    position: relative;
+    width: 800px;
+    height: 600px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border: 4px solid #fff;
+    border-radius: 12px;
+    background-color: #87CEEB;
+    /* Sky blue */
+    overflow: hidden;
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+}
+
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(8px);
+}
+
+.screen.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+#start-screen {
+    background: url('autumn_main_menu_bg.png') center center;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#start-screen h1 {
+    color: #fff;
+    text-shadow: 2px 2px 0px #ff4b72, -2px -2px 0px #ff4b72, 2px -2px 0px #ff4b72, -2px 2px 0px #ff4b72;
+}
+
+#start-screen p {
+    color: #333;
+    text-shadow: 1px 1px 2px #fff;
+    font-weight: bold;
+}
+
+h1 {
+    font-size: 20px;
+    color: #ff4b72;
+    margin-bottom: 20px;
+    line-height: 1.5;
+    text-shadow: 2px 2px 0px #fff, -2px -2px 0px #fff, 2px -2px 0px #fff, -2px 2px 0px #fff;
+}
+
+p {
+    font-size: 11px;
+    line-height: 1.8;
+    margin-bottom: 30px;
+    color: #555;
+    max-width: 80%;
+}
+
+.controls-hint {
+    background: #f0f0f0;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+    color: #333;
+    font-size: 10px;
+}
+
+.love-message {
+    font-size: 14px;
+    color: #ff1493;
+    font-weight: bold;
+    animation: pulse 1.5s infinite;
+}
+
+.btn {
+    font-family: 'Press Start 2P', cursive;
+    background: linear-gradient(to bottom, #ff6b8b, #ff4b72);
+    color: white;
+    border: 4px solid #ff1493;
+    padding: 15px 30px;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 8px;
+    box-shadow: 0 6px 0 #d81b60;
+    transition: all 0.1s;
+    text-transform: uppercase;
+}
+
+.btn:active {
+    transform: translateY(6px);
+    box-shadow: 0 0px 0 #d81b60;
+}
+
+.btn:hover {
+    filter: brightness(1.1);
+}
+
+.dialog-buttons {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    height: 100px;
+}
+
+.btn-yes {
+    background: linear-gradient(to bottom, #2ecc71, #27ae60);
+    border-color: #219653;
+    box-shadow: 0 6px 0 #1e8449;
+    font-size: 16px;
+    padding: 20px 40px;
+    z-index: 5;
+}
+
+.btn-yes:active {
+    box-shadow: 0 0px 0 #1e8449;
+}
+
+.btn-no {
+    background: linear-gradient(to bottom, #e74c3c, #c0392b);
+    border-color: #c0392b;
+    box-shadow: 0 6px 0 #922b21;
+    position: relative;
+    transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 10;
+}
+
+.btn-no:active {
+    box-shadow: 0 0px 0 #922b21;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+        color: #ff0000;
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Mobile Controls */
+#mobile-controls {
+    display: none;
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 20;
+    pointer-events: none;
+    /* Let clicks pass through container */
+}
+
+.d-pad,
+.action-pad {
+    display: flex;
+    gap: 15px;
+    pointer-events: auto;
+    /* Re-enable clicks for buttons */
+}
+
+.control-btn {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 4px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    color: #333;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+.control-btn:active,
+.control-btn.active {
+    background: rgba(255, 255, 255, 0.9);
+    transform: scale(0.95);
+}
+
+.action-btn {
+    width: 70px;
+    height: 70px;
+    background: rgba(46, 204, 113, 0.5);
+    border-color: rgba(46, 204, 113, 0.8);
+    color: white;
+}
+
+.action-btn:active,
+.action-btn.active {
+    background: rgba(46, 204, 113, 0.9);
+}
+
+/* Responsive adjustments */
+@media (max-width: 850px) {
+    #game-container {
+        width: 100vw;
+        height: 100vh;
+        border: none;
+        border-radius: 0;
+    }
+
+    #mobile-controls {
+        display: flex;
+    }
+
+    h1 {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    p {
+        font-size: 10px;
+        margin-bottom: 20px;
+    }
+
+    .controls-hint {
+        font-size: 9px;
+        padding: 5px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 10px;
+    }
+
+    .dialog-buttons {
+        flex-direction: column;
+        height: auto;
+        gap: 10px;
+    }
+
+    .btn-yes,
+    .btn-no {
+        width: 100%;
+        max-width: 200px;
+        padding: 15px;
+    }
+}
+
+/* Cutscene Dialog */
+.cutscene-container {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.75);
+    border: 3px solid white;
+    border-radius: 10px;
+    color: white;
+    padding: 20px;
+    min-width: 400px;
+    text-align: center;
+    z-index: 15;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.cutscene-container.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#cutscene-text {
+    font-size: 14px;
+    margin: 0;
+    color: white;
+    line-height: 1.5;
+    max-width: 100%;
+}
+
+.fade-out {
+    animation: fadeOut 1s forwards;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+#win-screen {
+    background: #0b001a url('rainy_city.png') repeat-x center bottom;
+    background-size: auto 100%;
+    animation: scrollCity 40s linear infinite;
+}
+
+#win-screen h1 {
+    color: #fff;
+    text-shadow: 2px 2px 0px #e74c3c, -2px -2px 0px #e74c3c, 2px -2px 0px #e74c3c, -2px 2px 0px #e74c3c;
+}
+
+#win-screen p {
+    color: #fff;
+    text-shadow: 1px 1px 2px #000;
+}
+
+#win-screen .love-message {
+    color: #ff1493;
+    text-shadow: none;
+}
+
+@keyframes scrollCity {
+    from {
+        background-position: 0 bottom;
+    }
+
+    to {
+        background-position: -1920px bottom;
+    }
+}
