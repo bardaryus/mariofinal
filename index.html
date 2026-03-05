@@ -4,34 +4,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Barış'tan Damla'ya Küçük Bir Oyun</title>
+    <title>Sevgilini Kurtar - Aşk Macerası</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <div id="game-container">
-        <!-- Start Screen -->
-        <div id="start-screen" class="screen overlay active">
-            <h1>Seni Kurtarmaya Geliyorum Damla!</h1>
-            <p>Sevgiline (Barış'a) yardım et ve engelleri aşarak Damla'ya kavuşmasını sağla.</p>
-            <p class="controls-hint">Hareket: Yön Tuşları veya Ekrana Dokun | Zıplama: Boşluk veya Ekrana Dokun</p>
-            <button id="start-btn" class="btn" style="margin-bottom: 10px;">Maceraya Başla</button>
-            <button id="level-select-btn" class="btn" style="background-color: #3498db; margin-bottom: 20px;">Bölüm
-                Seç</button>
 
-            <div id="level-grid"
-                style="display: none; grid-template-columns: repeat(5, 1fr); gap: 10px; max-width: 400px; margin: 0 auto;">
-                <button class="btn btn-level" data-level="0">1</button>
-                <button class="btn btn-level" data-level="1">2</button>
-                <button class="btn btn-level" data-level="2">3</button>
-                <button class="btn btn-level" data-level="3">4</button>
-                <button class="btn btn-level" data-level="4">5</button>
-                <button class="btn btn-level" data-level="5">6</button>
-                <button class="btn btn-level" data-level="6">7</button>
-                <button class="btn btn-level" data-level="7">8</button>
-                <button class="btn btn-level" data-level="8">9</button>
-                <button class="btn btn-level" data-level="9">10</button>
+        <!-- Mobile Touch Controls -->
+        <div id="mobile-gamepad" class="hidden">
+            <div class="dpad">
+                <button class="gamepad-btn" id="btn-left">◀</button>
+                <button class="gamepad-btn" id="btn-right">▶</button>
+            </div>
+            <div class="action-pad">
+                <button class="gamepad-btn" id="btn-jump">▲</button>
+            </div>
+        </div>
+
+        <!-- Character Setup Screen -->
+        <div id="setup-screen" class="screen overlay active">
+            <div class="setup-content">
+                <h1 class="setup-title">💕 Sevgilini Kurtar 💕</h1>
+                <p class="setup-subtitle">Karakterini oluştur ve maceraya atıl!</p>
+
+                <div class="setup-panels">
+                    <!-- Player Setup -->
+                    <div class="setup-section">
+                        <h2 class="section-title">🎮 Sen Kimsin?</h2>
+                        <input type="text" id="player-name-input" class="name-input" placeholder="Adını yaz..."
+                            maxlength="12">
+
+                        <div class="character-select" id="player-character-select">
+                            <div class="char-option" data-id="boy_blonde"><canvas width="60" height="60"></canvas></div>
+                            <div class="char-option selected" data-id="boy_brunette"><canvas width="60"
+                                    height="60"></canvas></div>
+                            <div class="char-option" data-id="boy_black"><canvas width="60" height="60"></canvas></div>
+                            <div class="char-option" data-id="girl_blonde"><canvas width="60" height="60"></canvas>
+                            </div>
+                            <div class="char-option" data-id="girl_brunette"><canvas width="60" height="60"></canvas>
+                            </div>
+                            <div class="char-option" data-id="girl_black"><canvas width="60" height="60"></canvas></div>
+                        </div>
+                    </div>
+
+                    <!-- Rescue Person Setup -->
+                    <div class="setup-section">
+                        <h2 class="section-title">💘 Kimi Kurtaracaksın?</h2>
+                        <input type="text" id="rescue-name-input" class="name-input"
+                            placeholder="Sevgilinin adını yaz..." maxlength="12">
+
+                        <p class="char-select-hint">Sevgilinin karakteri nasıl görünsün?</p>
+                        <div class="character-select" id="rescue-character-select">
+                            <div class="char-option" data-id="boy_blonde"><canvas width="60" height="60"></canvas></div>
+                            <div class="char-option" data-id="boy_brunette"><canvas width="60" height="60"></canvas>
+                            </div>
+                            <div class="char-option" data-id="boy_black"><canvas width="60" height="60"></canvas></div>
+                            <div class="char-option" data-id="girl_blonde"><canvas width="60" height="60"></canvas>
+                            </div>
+                            <div class="char-option selected" data-id="girl_brunette"><canvas width="60"
+                                    height="60"></canvas></div>
+                            <div class="char-option" data-id="girl_black"><canvas width="60" height="60"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="setup-start-btn" class="btn setup-btn">🚀 Maceraya Başla!</button>
+                <p class="credits-small">Tasarım & Kod: Barış Sayın</p>
+            </div>
+        </div>
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen overlay">
+            <div class="falling-leaves">
+                <span class="leaf" style="left:5%; animation-delay:0s; animation-duration:6s;">🍂</span>
+                <span class="leaf" style="left:15%; animation-delay:1s; animation-duration:8s;">🍁</span>
+                <span class="leaf" style="left:25%; animation-delay:3s; animation-duration:7s;">🍂</span>
+                <span class="leaf" style="left:35%; animation-delay:0.5s; animation-duration:9s;">🍁</span>
+                <span class="leaf" style="left:45%; animation-delay:2s; animation-duration:6.5s;">🍂</span>
+                <span class="leaf" style="left:55%; animation-delay:4s; animation-duration:7.5s;">🍁</span>
+                <span class="leaf" style="left:65%; animation-delay:1.5s; animation-duration:8.5s;">🍂</span>
+                <span class="leaf" style="left:75%; animation-delay:3.5s; animation-duration:6s;">🍁</span>
+                <span class="leaf" style="left:85%; animation-delay:0.8s; animation-duration:9.5s;">🍂</span>
+                <span class="leaf" style="left:92%; animation-delay:2.5s; animation-duration:7s;">🍁</span>
+                <span class="leaf" style="left:10%; animation-delay:5s; animation-duration:8s;">🍃</span>
+                <span class="leaf" style="left:50%; animation-delay:6s; animation-duration:7s;">🍃</span>
+            </div>
+
+            <div class="start-content">
+                <h1 id="start-title">Seni Kurtarmaya Geliyorum!</h1>
+                <p id="start-desc">Engelleri aşarak sevgiline kavuş.</p>
+                <p class="controls-hint">Hareket: Yön Tuşları veya Ekrana Dokun | Zıplama: Boşluk veya Ekrana Dokun</p>
+                <button id="start-btn" class="btn" style="margin-bottom: 10px;">Maceraya Başla</button>
+                <button id="level-select-btn" class="btn" style="background-color: #3498db; margin-bottom: 20px;">Bölüm
+                    Seç</button>
+
+                <div id="level-grid"
+                    style="display: none; grid-template-columns: repeat(5, 1fr); gap: 10px; max-width: 400px; margin: 0 auto;">
+                    <button class="btn btn-level" data-level="0">1</button>
+                    <button class="btn btn-level" data-level="1">2</button>
+                    <button class="btn btn-level" data-level="2">3</button>
+                    <button class="btn btn-level" data-level="3">4</button>
+                    <button class="btn btn-level" data-level="4">5</button>
+                    <button class="btn btn-level" data-level="5">6</button>
+                    <button class="btn btn-level" data-level="6">7</button>
+                    <button class="btn btn-level" data-level="7">8</button>
+                    <button class="btn btn-level" data-level="8">9</button>
+                    <button class="btn btn-level" data-level="9">10</button>
+                </div>
             </div>
         </div>
 
@@ -51,11 +132,14 @@
 
         <!-- Win/End Screen -->
         <div id="win-screen" class="screen overlay">
-            <h1 id="win-title" style="margin-bottom: 20px;">Birlikte devam?</h1>
-            <p class="love-message" style="margin-top: 10px; font-size: 16px;">Devamı gelecek...</p>
-            <p style="margin-top: 30px; font-size: 14px; color: #f1c40f; text-shadow: 2px 2px #000;">Yapan: Barış Sayın
+            <h1 id="win-title" style="margin-bottom: 20px;">Kavuştunuz! 💕</h1>
+            <p id="win-message" class="love-message" style="margin-top: 10px; font-size: 16px;">Sonsuza dek birlikte...
             </p>
-            <div class="dialog-buttons" style="margin-top: 40px; flex-direction: column; height: auto; gap: 15px;">
+            <p style="margin-top: 20px; font-size: 10px; color: #aaa; text-shadow: 1px 1px #000;">Oyun Tasarım & Kod:
+                Barış Sayın</p>
+            <p id="win-players" style="margin-top: 5px; font-size: 12px; color: #f1c40f; text-shadow: 2px 2px #000;">
+            </p>
+            <div class="dialog-buttons" style="margin-top: 30px; flex-direction: column; height: auto; gap: 15px;">
                 <button id="restart-btn" class="btn btn-yes"
                     style="padding: 15px 30px; font-size: 14px; width: 220px;">Tekrar Oyna</button>
                 <button id="main-menu-btn" class="btn btn-no"
@@ -70,6 +154,20 @@
         <div id="ui-overlay"
             style="position: absolute; top: 10px; right: 20px; color: white; text-shadow: 2px 2px 0 #000; font-size: 14px; z-index: 5; display: none;">
             💀 Düşüş: <span id="death-count">0</span>
+        </div>
+
+        <!-- Pause Button -->
+        <button id="pause-btn" style="position: absolute; top: 10px; left: 15px; z-index: 6; display: none;
+            font-family: 'Press Start 2P', cursive; background: rgba(0,0,0,0.5); color: #fff; border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 8px; padding: 6px 10px; font-size: 14px; cursor: pointer; transition: all 0.2s;">⏸</button>
+
+        <!-- Pause Overlay -->
+        <div id="pause-screen" class="screen overlay">
+            <h1 style="color: #f1c40f; text-shadow: 2px 2px 0 #000; margin-bottom: 30px;">⏸ Durduruldu</h1>
+            <button id="resume-btn" class="btn btn-yes"
+                style="padding: 15px 30px; font-size: 14px; width: 220px; margin-bottom: 15px;">▶ Devam Et</button>
+            <button id="pause-menu-btn" class="btn btn-no" style="padding: 15px 30px; font-size: 14px; width: 220px;">🏠
+                Ana Menü</button>
         </div>
 
         <!-- Mobile Controls (Hidden on Desktop) -->

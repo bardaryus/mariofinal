@@ -17,8 +17,98 @@ const cutsceneText = document.getElementById('cutscene-text');
 const uiOverlay = document.getElementById('ui-overlay');
 const deathCountSpan = document.getElementById('death-count');
 
+// ===== PERSONALIZATION SYSTEM =====
+let playerName = 'Kahraman';
+let rescueName = 'Sevgili';
+let selectedPlayerModelId = 'boy_brunette';
+let selectedRescueModelId = 'girl_brunette';
+
+const CHAR_MODELS = {
+    'boy_blonde': { type: 'boy', colors: { hair: { r: 241, g: 196, b: 15 }, hairDark: { r: 211, g: 166, b: 0 }, skin: { r: 255, g: 223, b: 196 }, skinDark: { r: 230, g: 198, b: 171 }, shirt: { r: 52, g: 152, b: 219 }, shirtLight: { r: 82, g: 182, b: 249 }, pants: { r: 41, g: 128, b: 185 }, shoes: { r: 20, g: 100, b: 150 } } },
+    'boy_brunette': { type: 'boy', colors: { hair: { r: 141, g: 110, b: 99 }, hairDark: { r: 111, g: 80, b: 69 }, skin: { r: 255, g: 204, b: 153 }, skinDark: { r: 230, g: 179, b: 128 }, shirt: { r: 231, g: 76, b: 60 }, shirtLight: { r: 255, g: 106, b: 90 }, pants: { r: 192, g: 57, b: 43 }, shoes: { r: 160, g: 30, b: 20 } } },
+    'boy_black': { type: 'boy', colors: { hair: { r: 44, g: 62, b: 80 }, hairDark: { r: 24, g: 42, b: 60 }, skin: { r: 212, g: 163, b: 115 }, skinDark: { r: 187, g: 138, b: 90 }, shirt: { r: 46, g: 204, b: 113 }, shirtLight: { r: 76, g: 234, b: 143 }, pants: { r: 39, g: 174, b: 96 }, shoes: { r: 20, g: 150, b: 70 } } },
+    'girl_blonde': { type: 'girl', colors: { hair: { r: 241, g: 196, b: 15 }, hairDark: { r: 211, g: 166, b: 0 }, skin: { r: 255, g: 223, b: 196 }, skinDark: { r: 230, g: 198, b: 171 }, shirt: { r: 155, g: 89, b: 182 }, shirtLight: { r: 185, g: 119, b: 212 }, pants: { r: 142, g: 68, b: 173 }, shoes: { r: 110, g: 40, b: 140 } } },
+    'girl_brunette': { type: 'girl', colors: { hair: { r: 141, g: 110, b: 99 }, hairDark: { r: 111, g: 80, b: 69 }, skin: { r: 255, g: 204, b: 153 }, skinDark: { r: 230, g: 179, b: 128 }, shirt: { r: 230, g: 126, b: 34 }, shirtLight: { r: 255, g: 156, b: 64 }, pants: { r: 211, g: 84, b: 0 }, shoes: { r: 180, g: 50, b: 0 } } },
+    'girl_black': { type: 'girl', colors: { hair: { r: 44, g: 62, b: 80 }, hairDark: { r: 24, g: 42, b: 60 }, skin: { r: 212, g: 163, b: 115 }, skinDark: { r: 187, g: 138, b: 90 }, shirt: { r: 26, g: 188, b: 156 }, shirtLight: { r: 56, g: 218, b: 186 }, pants: { r: 22, g: 160, b: 133 }, shoes: { r: 10, g: 130, b: 100 } } }
+};
+
+// Setup screen logic
+function initSetupScreen() {
+    const setupScreen = document.getElementById('setup-screen');
+    const setupStartBtn = document.getElementById('setup-start-btn');
+
+    // Draw default character previews on the selection canvases
+    drawDefaultCharPreviews();
+
+    // Player Selection Handlers
+    const playerOpts = document.querySelectorAll('#player-character-select .char-option');
+    playerOpts.forEach(opt => {
+        opt.addEventListener('click', () => {
+            playerOpts.forEach(o => o.classList.remove('selected'));
+            opt.classList.add('selected');
+            selectedPlayerModelId = opt.getAttribute('data-id');
+        });
+    });
+
+    // Rescue Selection Handlers
+    const rescueOpts = document.querySelectorAll('#rescue-character-select .char-option');
+    rescueOpts.forEach(opt => {
+        opt.addEventListener('click', () => {
+            rescueOpts.forEach(o => o.classList.remove('selected'));
+            opt.classList.add('selected');
+            selectedRescueModelId = opt.getAttribute('data-id');
+        });
+    });
+
+    // Start button
+    setupStartBtn.addEventListener('click', () => {
+        // Get names
+        const pName = document.getElementById('player-name-input').value.trim();
+        const rName = document.getElementById('rescue-name-input').value.trim();
+        playerName = pName || 'Kahraman';
+        rescueName = rName || 'Sevgili';
+
+        // Update start screen texts with dynamic names
+        document.getElementById('start-title').textContent =
+            `Seni Kurtarmaya Geliyorum ${rescueName}!`;
+        document.getElementById('start-desc').textContent =
+            `${rescueName}'e yardım et ve engelleri aşarak ${rescueName}'ya kavuşmasını sağla.`;
+
+        // Update win screen
+        document.getElementById('win-title').textContent = `${playerName} & ${rescueName} Kavuştu! 💕`;
+        document.getElementById('win-message').textContent = `${playerName} ve ${rescueName}, sonsuza dek birlikte...`;
+        document.getElementById('win-players').textContent = `${playerName} ❤️ ${rescueName}`;
+
+        // Hide setup, show start
+        setupScreen.classList.remove('active');
+        gameState = 'START';
+        startScreen.classList.add('active');
+    });
+}
+
+// Draw default character previews on setup screen canvases
+function drawDefaultCharPreviews() {
+    const allOptions = document.querySelectorAll('.char-option');
+    allOptions.forEach(opt => {
+        const id = opt.getAttribute('data-id');
+        const canvas = opt.querySelector('canvas');
+        if (canvas && CHAR_MODELS[id]) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, 60, 60);
+
+            const model = CHAR_MODELS[id];
+            // Center character in 60x60 canvas
+            if (model.type === 'boy') {
+                drawCustomBoy(ctx, 10, 5, 40, 50, false, 1, model.colors);
+            } else {
+                drawCustomGirl(ctx, 10, 5, 40, 50, model.colors);
+            }
+        }
+    });
+}
+
 // Game State
-let gameState = 'START'; // START, LEVEL_INTRO, PLAYING, CUTSCENE, WIN
+let gameState = 'SETUP'; // SETUP, START, LEVEL_INTRO, PLAYING, CUTSCENE, WIN
 let currentLevelIdx = 0;
 let camera = { x: 0, targetX: 0, y: 0 };
 let frameCount = 0;
@@ -58,7 +148,8 @@ function rectIntersect(r1, r2) {
 }
 
 // -- Drawing Sprites --
-function drawBaris(ctx, x, y, width, height, isJumping, lookDir) {
+// Default Boy sprite (original Barış)
+function drawBoyDefault(ctx, x, y, width, height, isJumping, lookDir) {
     let scale = width / 10;
     ctx.fillStyle = '#3e2723';
     ctx.fillRect(x + 1 * scale, y + 0 * scale, 8 * scale, 2 * scale);
@@ -107,7 +198,8 @@ function drawBaris(ctx, x, y, width, height, isJumping, lookDir) {
     }
 }
 
-function drawDamla(ctx, x, y, width, height) {
+// Default Girl sprite (original Damla)
+function drawGirlDefault(ctx, x, y, width, height) {
     let scale = width / 10;
     ctx.fillStyle = '#4e342e';
     ctx.fillRect(x + 1 * scale, y + 1 * scale, 8 * scale, 9 * scale);
@@ -137,6 +229,143 @@ function drawDamla(ctx, x, y, width, height) {
     ctx.fillStyle = '#fce2c4';
     ctx.fillRect(x + 0 * scale, y + 9 * scale, 1.5 * scale, 1.5 * scale);
     ctx.fillRect(x + 8.5 * scale, y + 9 * scale, 1.5 * scale, 1.5 * scale);
+}
+
+// Draw a boy sprite with custom color palette
+function drawCustomBoy(ctx, x, y, width, height, isJumping, lookDir, colors) {
+    let scale = width / 10;
+    const rgb = (c) => `rgb(${c.r},${c.g},${c.b})`;
+
+    // Hair
+    ctx.fillStyle = rgb(colors.hair);
+    ctx.fillRect(x + 1 * scale, y + 0 * scale, 8 * scale, 2 * scale);
+    ctx.fillRect(x + 1 * scale, y - 1 * scale, 2 * scale, 1 * scale);
+    ctx.fillRect(x + 4 * scale, y - 1 * scale, 2 * scale, 1 * scale);
+    ctx.fillRect(x + 7 * scale, y - 1 * scale, 1 * scale, 1 * scale);
+    ctx.fillStyle = rgb(colors.hairDark);
+    ctx.fillRect(x + 0 * scale, y + 1 * scale, 2 * scale, 2 * scale);
+
+    // Face
+    ctx.fillStyle = rgb(colors.skin);
+    ctx.fillRect(x + 2 * scale, y + 2 * scale, 6 * scale, 3 * scale);
+    ctx.fillStyle = rgb(colors.skinDark);
+    ctx.fillRect(x + 2 * scale, y + 4.5 * scale, 6 * scale, 1 * scale);
+    ctx.fillRect(x + 4 * scale, y + 4 * scale, 2 * scale, 0.5 * scale);
+
+    // Eyes
+    ctx.fillStyle = '#000';
+    let eyeOff = lookDir < 0 ? 0 : 1;
+    ctx.fillRect(x + (3 + eyeOff) * scale, y + 3 * scale, 1 * scale, 1 * scale);
+    ctx.fillRect(x + (5 + eyeOff) * scale, y + 3 * scale, 1 * scale, 1 * scale);
+
+    // Shirt
+    ctx.fillStyle = rgb(colors.shirt);
+    ctx.fillRect(x + 1 * scale, y + 5 * scale, 8 * scale, 4 * scale);
+    ctx.fillStyle = rgb(colors.shirtLight);
+    ctx.fillRect(x + 4 * scale, y + 5 * scale, 2 * scale, 3 * scale);
+
+    // Arms
+    ctx.fillStyle = rgb(colors.shirt);
+    if (isJumping) {
+        ctx.fillRect(x + 0 * scale, y + 4 * scale, 2 * scale, 3 * scale);
+        ctx.fillRect(x + 8 * scale, y + 4 * scale, 2 * scale, 3 * scale);
+    } else {
+        ctx.fillRect(x + 0 * scale, y + 5 * scale, 2 * scale, 3 * scale);
+        ctx.fillRect(x + 8 * scale, y + 5 * scale, 2 * scale, 3 * scale);
+    }
+    // Hands
+    ctx.fillStyle = rgb(colors.skin);
+    if (isJumping) {
+        ctx.fillRect(x + 0 * scale, y + 3 * scale, 2 * scale, 1 * scale);
+        ctx.fillRect(x + 8 * scale, y + 3 * scale, 2 * scale, 1 * scale);
+    } else {
+        ctx.fillRect(x + 0.5 * scale, y + 8 * scale, 1 * scale, 1 * scale);
+        ctx.fillRect(x + 8.5 * scale, y + 8 * scale, 1 * scale, 1 * scale);
+    }
+
+    // Pants
+    ctx.fillStyle = rgb(colors.pants);
+    ctx.fillRect(x + 2 * scale, y + 9 * scale, 6 * scale, 2 * scale);
+
+    // Shoes
+    ctx.fillStyle = rgb(colors.shoes);
+    if (isJumping) {
+        ctx.fillRect(x + 1 * scale, y + 10 * scale, 3 * scale, 1 * scale);
+        ctx.fillRect(x + 6 * scale, y + 10 * scale, 3 * scale, 1 * scale);
+    } else {
+        ctx.fillRect(x + 2 * scale, y + 11 * scale, 2 * scale, 1 * scale);
+        ctx.fillRect(x + 6 * scale, y + 11 * scale, 2 * scale, 1 * scale);
+    }
+}
+
+// Draw a girl sprite with custom color palette
+function drawCustomGirl(ctx, x, y, width, height, colors) {
+    let scale = width / 10;
+    const rgb = (c) => `rgb(${c.r},${c.g},${c.b})`;
+
+    // Long hair
+    ctx.fillStyle = rgb(colors.hair);
+    ctx.fillRect(x + 1 * scale, y + 0 * scale, 8 * scale, 2 * scale);
+    ctx.fillRect(x + 7 * scale, y + 0 * scale, 2 * scale, 1 * scale);
+    ctx.fillStyle = rgb(colors.hairDark);
+    ctx.fillRect(x + 0 * scale, y + 1 * scale, 2 * scale, 4 * scale);
+    ctx.fillRect(x + 8 * scale, y + 1 * scale, 2 * scale, 4 * scale);
+
+    // Face
+    ctx.fillStyle = rgb(colors.skin);
+    ctx.fillRect(x + 2 * scale, y + 2 * scale, 6 * scale, 3 * scale);
+    // Blush
+    ctx.fillStyle = `rgba(${Math.min(255, colors.skin.r + 40)}, ${Math.max(0, colors.skin.g - 20)}, ${Math.max(0, colors.skin.b - 10)}, 0.4)`;
+    ctx.fillRect(x + 2 * scale, y + 4 * scale, 2 * scale, 1 * scale);
+    ctx.fillRect(x + 6 * scale, y + 4 * scale, 2 * scale, 1 * scale);
+
+    // Eyes
+    ctx.fillStyle = '#000';
+    ctx.fillRect(x + 3 * scale, y + 3 * scale, 1 * scale, 1 * scale);
+    ctx.fillRect(x + 6 * scale, y + 3 * scale, 1 * scale, 1 * scale);
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(x + 3 * scale, y + 3 * scale, 0.5 * scale, 0.5 * scale);
+    ctx.fillRect(x + 6 * scale, y + 3 * scale, 0.5 * scale, 0.5 * scale);
+
+    // Lips
+    ctx.fillStyle = '#e91e63';
+    ctx.fillRect(x + 4 * scale, y + 4 * scale, 2 * scale, 0.5 * scale);
+
+    // Dress
+    ctx.fillStyle = rgb(colors.shirt);
+    ctx.fillRect(x + 1 * scale, y + 5 * scale, 8 * scale, 6 * scale);
+    ctx.fillStyle = rgb(colors.shirtLight);
+    ctx.fillRect(x + 3 * scale, y + 5 * scale, 4 * scale, 1 * scale);
+
+    // Hands
+    ctx.fillStyle = rgb(colors.skin);
+    ctx.fillRect(x + 0.5 * scale, y + 8 * scale, 1 * scale, 1 * scale);
+    ctx.fillRect(x + 8.5 * scale, y + 8 * scale, 1 * scale, 1 * scale);
+
+    // Legs
+    ctx.fillStyle = rgb(colors.skin);
+    ctx.fillRect(x + 3 * scale, y + 11 * scale, 1.5 * scale, 1 * scale);
+    ctx.fillRect(x + 5.5 * scale, y + 11 * scale, 1.5 * scale, 1 * scale);
+}
+
+// Dynamic player sprite
+function drawPlayerSprite(ctx, x, y, width, height, isJumping, lookDir) {
+    const model = CHAR_MODELS[selectedPlayerModelId];
+    if (model.type === 'girl') {
+        drawCustomGirl(ctx, x, y, width, height, model.colors);
+    } else {
+        drawCustomBoy(ctx, x, y, width, height, isJumping, lookDir, model.colors);
+    }
+}
+
+// Dynamic rescue sprite
+function drawRescueSprite(ctx, x, y, width, height) {
+    const model = CHAR_MODELS[selectedRescueModelId];
+    if (model.type === 'girl') {
+        drawCustomGirl(ctx, x, y, width, height, model.colors);
+    } else {
+        drawCustomBoy(ctx, x, y, width, height, false, 1, model.colors);
+    }
 }
 
 function drawDog(ctx, x, y, w, h, dir) {
@@ -826,7 +1055,7 @@ class Player {
             ctx.fillStyle = 'red';
             ctx.fillText("!", this.x + 15, this.y - 10);
         }
-        drawBaris(ctx, this.x, this.y, this.w, this.h, !this.grounded, this.lookDir);
+        drawPlayerSprite(ctx, this.x, this.y, this.w, this.h, !this.grounded, this.lookDir);
         ctx.restore();
     }
 }
@@ -1025,7 +1254,7 @@ let currentLevelData = null;
 
 // Cutscene vars
 let cutsceneTimer = 0;
-let damlaCutscene = { x: 3700, y: 406, w: 44, h: 44 }; // Will sit at end of level 10
+let rescueCutscene = { x: 3700, y: 406, w: 44, h: 44 }; // Will sit at end of level 10
 
 function die() {
     deathCount++;
@@ -1055,10 +1284,11 @@ function levelComplete() {
         gameState = 'CUTSCENE';
         player.vx = 0; player.vy = 0;
         keys.left = false; keys.right = false; keys.up = false;
+        document.getElementById('pause-btn').style.display = 'none';
 
         // Sequence
         setTimeout(() => {
-            showDialogBox("Damla: Gerçekten geldin mi?");
+            showDialogBox(rescueName + ": Gerçekten geldin mi?");
             setTimeout(() => {
                 const choiceBtn = document.getElementById('cutscene-choice-btn');
                 if (choiceBtn) choiceBtn.style.display = 'inline-block';
@@ -1090,6 +1320,7 @@ function startLevel(idx, fromDeath = false) {
         // Ölünce direkt oynama moduna geç, intro gösterme
         gameState = 'PLAYING';
         uiOverlay.style.display = 'block';
+        document.getElementById('pause-btn').style.display = 'block';
     } else {
         // Yeni bölüme geçişte intro ekranını göster
         gameState = 'LEVEL_INTRO';
@@ -1102,6 +1333,7 @@ function startLevel(idx, fromDeath = false) {
             levelIntroScreen.classList.remove('active');
             gameState = 'PLAYING';
             uiOverlay.style.display = 'block'; // show during gameplay
+            document.getElementById('pause-btn').style.display = 'block';
         }, 2000);
     }
 }
@@ -1109,6 +1341,7 @@ function startLevel(idx, fromDeath = false) {
 // -- Main Loop --
 function update() {
     frameCount++;
+    if (gameState === 'PAUSED') return; // Skip update when paused
     if (gameState === 'PLAYING') {
         for (let e of currentLevelData.entities) {
             if (e.active) e.update(player, currentLevelData);
@@ -1120,7 +1353,7 @@ function update() {
         camera.x += (camera.targetX - camera.x) * 0.1;
     } else if (gameState === 'CUTSCENE') {
         // Auto pan camera slightly to frame both
-        let target = (player.x + damlaCutscene.x) / 2 - 400;
+        let target = (player.x + rescueCutscene.x) / 2 - 400;
         camera.x += (target - camera.x) * 0.05;
         player.update(currentLevelData); // applies gravity only
     }
@@ -1401,8 +1634,9 @@ function drawBackground(ctx, level) {
     drawCityLayer(ctx, camera.x, 0.35, 0, isNight ? '#0c0f2a' : 'rgba(0, 0, 0, 0.3)', true, isNight); // Front layer
 }
 
+
 function draw() {
-    if (gameState === 'START' || gameState === 'LEVEL_INTRO') return;
+    if (gameState === 'SETUP' || gameState === 'START' || gameState === 'LEVEL_INTRO') return;
 
     ctx.save();
     ctx.translate(-camera.x, 0);
@@ -1414,7 +1648,7 @@ function draw() {
     }
 
     if (currentLevelIdx === 9) {
-        drawDamla(ctx, damlaCutscene.x, damlaCutscene.y, damlaCutscene.w, damlaCutscene.h);
+        drawRescueSprite(ctx, rescueCutscene.x, rescueCutscene.y, rescueCutscene.w, rescueCutscene.h);
         // Detailed Pixel Art Door Graphic
         let gx = currentLevelData.goal.x, gy = currentLevelData.goal.y;
 
@@ -1623,15 +1857,15 @@ const cutsceneChoiceBtn = document.getElementById('cutscene-choice-btn');
 if (cutsceneChoiceBtn) {
     cutsceneChoiceBtn.addEventListener('click', () => {
         cutsceneChoiceBtn.style.display = 'none';
-        showDialogBox("Barış: Hiç gitmemiştim ki.");
+        showDialogBox(playerName + ": Hiç gitmemiştim ki.");
 
         setTimeout(() => {
             // Trigger Hug Animation
             cutsceneDialog.classList.remove('active');
             let hugInterval = setInterval(() => {
-                if (player.x < damlaCutscene.x - 20) {
+                if (player.x < rescueCutscene.x - 20) {
                     player.x += 2;
-                } else if (player.x > damlaCutscene.x + 20) {
+                } else if (player.x > rescueCutscene.x + 20) {
                     player.x -= 2;
                 } else {
                     clearInterval(hugInterval);
@@ -1648,4 +1882,52 @@ if (cutsceneChoiceBtn) {
 }
 
 // Initialization
+initSetupScreen();
+
+// ===== PAUSE SYSTEM =====
+const pauseBtn = document.getElementById('pause-btn');
+const pauseScreen = document.getElementById('pause-screen');
+const resumeBtn = document.getElementById('resume-btn');
+const pauseMenuBtn = document.getElementById('pause-menu-btn');
+
+function pauseGame() {
+    if (gameState === 'PLAYING') {
+        gameState = 'PAUSED';
+        pauseScreen.classList.add('active');
+        pauseBtn.style.display = 'none';
+    }
+}
+
+function resumeGame() {
+    if (gameState === 'PAUSED') {
+        gameState = 'PLAYING';
+        pauseScreen.classList.remove('active');
+        pauseBtn.style.display = 'block';
+    }
+}
+
+pauseBtn.addEventListener('click', pauseGame);
+resumeBtn.addEventListener('click', resumeGame);
+
+pauseMenuBtn.addEventListener('click', () => {
+    pauseScreen.classList.remove('active');
+    if (musicInterval) clearInterval(musicInterval);
+    stopCreditsMusic();
+    gameState = 'START';
+    startScreen.classList.add('active');
+    pauseBtn.style.display = 'none';
+    deathCount = 0;
+    deathCountSpan.innerText = deathCount;
+    uiOverlay.style.display = 'none';
+    camera.x = 0;
+});
+
+// Escape key to pause/resume
+window.addEventListener('keydown', (e) => {
+    if (e.code === 'Escape') {
+        if (gameState === 'PLAYING') pauseGame();
+        else if (gameState === 'PAUSED') resumeGame();
+    }
+});
+
 gameLoop();
